@@ -30,6 +30,10 @@ void player::setHandResults(vector<int> x) {
 	handResults = x;
 }
 
+void player::setAmountBet(int x) {
+	amountBet = x;
+}
+
 int player::bet(int amount) {
 	money -= amount;
 	amountBet += amount;
