@@ -292,14 +292,23 @@ int main(void) {
 										currentGame.clearPot();
 									}
 									else {
-										int removeAmount = players[i].getAmountBet();
 										string removeName = players[i].printName();
-										players[i].editMoney(players[i].getAmountBet() * numFinalists);
-										currentGame.removeFromPot(players[i].getAmountBet() * numFinalists);
-										cout << players[i].printName() << " has won a side pot for $" << players[i].getAmountBet() * numFinalists << "!" << endl;
+										int sidePotAmount = 0;
 										for (int j = 0; j < players.size(); j++) {
-											players[j].setAmountBet(players[j].getAmountBet() - removeAmount);
+											if (players[j].getAmountBet() >= players[i].getAmountBet()) {
+												players[i].editMoney(players[i].getAmountBet());
+												currentGame.removeFromPot(players[i].getAmountBet());
+												sidePotAmount += players[i].getAmountBet();
+												players[j].setAmountBet(players[j].getAmountBet() - players[i].getAmountBet());
+											}
+											else{
+												players[i].editMoney(players[j].getAmountBet());
+												currentGame.removeFromPot(players[j].getAmountBet());
+												sidePotAmount += players[j].getAmountBet();
+												players[j].setAmountBet(players[j].getAmountBet() - players[j].getAmountBet());
+											}
 										}
+										cout << players[i].printName() << " has won a side pot for $" << sidePotAmount << "!" << endl;
 										for (int j = 0; j < finalists.size(); j++) {
 											if (finalists[j].printName() == removeName) {
 												finalists.erase(finalists.begin() + j);
@@ -314,29 +323,37 @@ int main(void) {
 							sort(winners.begin(), winners.end(), playerCompare);
 							int winnersSize = winners.size();
 							int potSplit = currentGame.getPot() / winnersSize;
+							int sidePotAmount = 0;
 							for (int i = 0; i < winnersSize; i++) {
 								for (int j = 0; j < players.size(); j++) {
 									if (players[j].printName() == winners[i].printName()) {
-										if (winners[0].getAmountBet() >= potSplit) { //if theyve paid the potSplit amount, they get their money back
+										if (players[j].getAmountBet() == currentGame.getMaxBet()) { //if theyve paid the potSplit amount, they get their money back
+											sidePotAmount = potSplit;
 											players[j].editMoney(potSplit);
 											cout << players[j].printName() << " ";
-											currentGame.clearPot();
+											currentGame.removeFromPot(potSplit);
 										}
 										else {
-											int removeAmount = ((players.size() - i) * players[j].getAmountBet()) / winnersSize;
-											int removeFromPotAmount = 0;
 											string removeName = players[j].printName();
+											cout << removeName << " ";
+											for (int k = 0; k < players.size(); k++) {
+												if (players[k].getAmountBet() >= players[j].getAmountBet()) {
+													sidePotAmount += players[j].getAmountBet();
+													players[k].setAmountBet(players[k].getAmountBet() - players[j].getAmountBet());
+												}
+												else{
+													sidePotAmount += players[k].getAmountBet();
+													players[k].setAmountBet(players[k].getAmountBet() - players[k].getAmountBet());
+												}
+											}
+											int distributeAmount = sidePotAmount / (winnersSize - i);
 											for (int k = i; k < winnersSize; k++) {
 												for (int l = 0; l < players.size(); l++) {
 													if (players[l].printName() == winners[k].printName()) {
-														players[l].editMoney(removeAmount);
-														currentGame.removeFromPot(removeAmount);
+														players[l].editMoney(distributeAmount);
+														currentGame.removeFromPot(distributeAmount);
 													}
 												}
-											}
-											cout << players[j].printName() << " ";
-											for (int k = 0; k < players.size(); k++) {
-												players[k].setAmountBet(players[k].getAmountBet() - players[j].getAmountBet());
 											}
 											for (int k = 0; k < finalists.size(); k++) {
 												if (finalists[k].printName() == removeName) {
@@ -348,8 +365,10 @@ int main(void) {
 									}
 								}
 							}
-							cout << " have split the pot for $" << potSplit << " each!" << endl;
+							cout << " have split the pot for $" << sidePotAmount << " each!" << endl;
 						}
+						if (finalists.size() == 0)
+							currentGame.clearPot();
 					}
 					for (int i = 0; i < players.size(); i++) { //print out all users name and money
 						if (players[i].printState() == "active|nb" || players[i].printState() == "active|b")
