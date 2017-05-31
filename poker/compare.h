@@ -544,6 +544,8 @@ player compare(player a, player b) {
 }
 
 vector<player> findWinner(vector<player> players) {
+	if (players.size() == 1)
+		return players;
 	player tie("Tie", 0);
 	vector<player> output;
 	bool player0tie, player1tie;
