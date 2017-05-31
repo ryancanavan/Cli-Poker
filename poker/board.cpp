@@ -11,6 +11,10 @@ void board::addToPot(int x) {
 	pot += x;
 }
 
+void board::removeFromPot(int x) {
+	pot -= x;
+}
+
 void board::setMaxBet(int x) {
 	maxBet = x;
 }

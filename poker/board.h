@@ -13,6 +13,7 @@ private:
 public:
 	board();
 	void addToPot(int x);
+	void removeFromPot(int x);
 	void setMaxBet(int x);
 	void addToRiver(card x);
 	int getPot();
