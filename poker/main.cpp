@@ -5,6 +5,7 @@
 #include "compare.h"
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 
@@ -34,8 +35,12 @@ void takeTurn(player &currentPlayer, vector<player> &players, board &currentGame
 	cout << endl;
 	cout << "River: " << currentGame.getRiver().print() << endl; //print out cards in river
 	while (true) {
-		if ((currentGame.getMaxBet() - currentPlayer.getAmountBet()) == 0) {
+		if ((currentGame.getMaxBet() - currentPlayer.getAmountBet()) == 0 || currentPlayer.printMoney() == 0) {
 			cout << "The following commands are available: Hand, Fold, Check, Bet" << endl << "> ";
+			cin >> userDecision;
+		}
+		else if (currentPlayer.printMoney() < (currentGame.getMaxBet() - currentPlayer.getAmountBet())) { //if they do not have enough to fully call, let them go all in
+			cout << "The following commands are available: Hand, Fold, Call($" << currentPlayer.printMoney() << "), Bet" << endl << "> ";
 			cin >> userDecision;
 		}
 		else {
@@ -50,11 +55,15 @@ void takeTurn(player &currentPlayer, vector<player> &players, board &currentGame
 			break;
 		}
 		else if ((currentGame.getMaxBet() - currentPlayer.getAmountBet()) != 0 && userDecision == "Call") { //bet the amount required and end turn
-			currentGame.addToPot(currentPlayer.bet(currentGame.getMaxBet() - currentPlayer.getAmountBet()));
+			if (currentPlayer.printMoney() < (currentGame.getMaxBet() - currentPlayer.getAmountBet())) {
+				currentGame.addToPot(currentPlayer.bet(currentPlayer.printMoney()));
+			}
+			else //if they have enough money to call then bet that amount
+				currentGame.addToPot(currentPlayer.bet(currentGame.getMaxBet() - currentPlayer.getAmountBet()));
 			currentPlayer.setState("active|b");
 			break;
 		}
-		else if ((currentGame.getMaxBet() - currentPlayer.getAmountBet()) == 0 && userDecision == "Check") { //set state to have bet and move to next player
+		else if ((currentGame.getMaxBet() - currentPlayer.getAmountBet()) == 0 || currentPlayer.printMoney() == 0 && userDecision == "Check") { //set state to have bet and move to next player
 			currentPlayer.setState("active|b");
 			break;
 		}
@@ -93,6 +102,10 @@ cardSet combine(cardSet a, cardSet b) {
 		b.remove(b.getFirst());
 	}
 	return out;
+}
+
+bool playerCompare(player a, player b) {
+	return (a.getAmountBet() < b.getAmountBet());
 }
 
 int main(void) {
@@ -149,8 +162,14 @@ int main(void) {
 			players[i].deal(deck.getFirst());
 			deck.remove(deck.getFirst());
 		}
-		currentGame.addToPot(players[blind].bet(smallBlind)); //small blind
-		currentGame.addToPot(players[(blind + 1) % players.size()].bet(smallBlind*2)); //big blind
+		if (players[blind].printMoney() >= smallBlind) //if they have enough to pay small blind
+			currentGame.addToPot(players[blind].bet(smallBlind)); //pay small blind
+		else
+			currentGame.addToPot(players[blind].bet(players[blind].printMoney())); //pay as much as they can
+		if (players[(blind + 1) % players.size()].printMoney() >= (smallBlind * 2)) //if they have enough to pay big blind
+			currentGame.addToPot(players[(blind + 1) % players.size()].bet(smallBlind * 2)); //pay big blind
+		else
+			currentGame.addToPot(players[(blind + 1) % players.size()].bet(players[(blind + 1) % players.size()].printMoney())); //pay as much as they can
 		currentGame.setMaxBet(smallBlind*2);
 		int loop = (blind + 2) % players.size(); //used to loop through players in each round
 		int currentPlayers; //amount of players who are still in round (not folded)
@@ -174,9 +193,7 @@ int main(void) {
 			int playersDoneBetting = 0;
 			for (int i = 0; i < players.size(); i++) { //check if everyone is done betting
 				if (players[i].printState() == "active|b") {
-					if (players[i].getAmountBet() == currentGame.getMaxBet()) {
-						playersDoneBetting++;
-					}
+					playersDoneBetting++;
 				}
 			}
 			if (playersDoneBetting == currentPlayers) { //move to second round
@@ -202,40 +219,85 @@ int main(void) {
 				}
 				else if (round == 4) { //find winner at end of round
 					system("cls");
-					vector<player> winners;
+					vector<player> finalists, winners;
 					for (int i = 0; i < players.size(); i++) {
 						if (players[i].printState() != "folded") {
 							cardSet total = combine(players[i].getHand(), currentGame.getRiver());
 							players[i].setHandResults(findBestHand(total));
-							winners.push_back(players[i]);
+							finalists.push_back(players[i]);
 						}
 					}
-					winners = findWinner(winners);
-					if (winners.size() == 1) {
-						//players[i].editMoney(currentGame.getPot());
-						for (int i = 0; i < players.size(); i++) {
-							if(players[i].printName() == winners[0].printName())
-								players[i].editMoney(currentGame.getPot());
-						}
-						cout << winners[0].printName() << " has won the hand!" << endl;
-					}
-					else {
-						int winnersSize = winners.size();
-						int potSplit = currentGame.getPot() / winnersSize;
-						for (int i = 0; i < winnersSize - 1; i++) {
-							for (int j = 0; j < players.size(); j++) {
-								if (players[j].printName() == winners[i].printName())
-									players[j].editMoney(potSplit);
+					while (currentGame.getPot() > 0) {
+						int numFinalists = finalists.size();
+						winners = findWinner(finalists);
+						if (winners.size() == 1) {
+							for (int i = 0; i < players.size(); i++) {
+								if (players[i].printName() == winners[0].printName()) {
+									if (players[i].getAmountBet() == currentGame.getMaxBet()) {
+										players[i].editMoney(currentGame.getPot());
+										cout << players[i].printName() << " has won the pot!" << endl;
+										currentGame.clearPot();
+									}
+									else {
+										int removeAmount = players[i].getAmountBet();
+										string removeName = players[i].printName();
+										players[i].editMoney(players[i].getAmountBet() * numFinalists);
+										currentGame.removeFromPot(players[i].getAmountBet() * numFinalists);
+										cout << players[i].printName() << " has won a side pot for $" << players[i].getAmountBet() * numFinalists << "!" << endl;
+										for (int j = 0; j < players.size(); j++) {
+											players[j].setAmountBet(players[j].getAmountBet() - removeAmount);
+										}
+										for (int j = 0; j < finalists.size(); j++) {
+											if (finalists[j].printName() == removeName) {
+												finalists.erase(finalists.begin() + j);
+												j = 0;
+											}
+										}
+									}
+								}
 							}
-							cout << winners[i].printName() << ", ";
 						}
-						for (int i = 0; i < players.size(); i++) {
-							if (players[i].printName() == winners[winnersSize - 1].printName())
-								players[i].editMoney(potSplit);
+						else {
+							sort(winners.begin(), winners.end(), playerCompare);
+							int winnersSize = winners.size();
+							int potSplit = currentGame.getPot() / winnersSize;
+							for (int i = 0; i < winnersSize; i++) {
+								for (int j = 0; j < players.size(); j++) {
+									if (players[j].printName() == winners[i].printName()) {
+										if (winners[0].getAmountBet() >= potSplit) { //if theyve paid the potSplit amount, they get their money back
+											players[j].editMoney(potSplit);
+											cout << players[j].printName() << " ";
+											currentGame.clearPot();
+										}
+										else {
+											int removeAmount = ((players.size() - i) * players[j].getAmountBet()) / winnersSize;
+											int removeFromPotAmount = 0;
+											string removeName = players[j].printName();
+											for (int k = i; k < winnersSize; k++) {
+												for (int l = 0; l < players.size(); l++) {
+													if (players[l].printName() == winners[k].printName()) {
+														players[l].editMoney(removeAmount);
+														currentGame.removeFromPot(removeAmount);
+													}
+												}
+											}
+											cout << players[j].printName() << " ";
+											for (int k = 0; k < players.size(); k++) {
+												players[k].setAmountBet(players[k].getAmountBet() - players[j].getAmountBet());
+											}
+											for (int k = 0; k < finalists.size(); k++) {
+												if (finalists[k].printName() == removeName) {
+													finalists.erase(finalists.begin() + k);
+													k = 0;
+												}
+											}
+										}
+									}	
+								}
+							}
+							cout << " have split the pot for $" << potSplit << " each!" << endl;
 						}
-						cout << winners[winnersSize - 1].printName() << " have split the pot!" << endl;
 					}
-					currentGame.clearPot(); //clear pot to show new $$ values
 					for (int i = 0; i < players.size(); i++) { //print out all users name and money
 						if (players[i].printState() == "active|nb" || players[i].printState() == "active|b")
 							cout << players[i].printName() << " - $" << players[i].printMoney() << "   ";
@@ -305,7 +367,9 @@ int main(void) {
 		blind = (blind + 1) % players.size(); //move blind to next player
 	}
 	system("cls");
-	cout << players[0].printName() << " has won the game! Congratulations!" << endl;
+	cout << players[0].printName() << " has won the game! Congratulations!" << endl << endl;
+	cout << "Thanks for playing!" << endl << endl;
+	cout << "Made by Ryan Canavan" << endl << endl;
 	system("pause");
 
 	return 0;
