@@ -13,7 +13,7 @@ cardSet populate(cardSet deck) { //creates full deck of cards in order
 	cardSet fullDeck;
 	string suits[] = { "C", "D", "H", "S" };
 	string values[] = { "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A" };
-	for (int j = 0; j < 13;  j++) {
+	for (int j = 0; j < 13; j++) {
 		for (int i = 0; i < 4; i++) {
 			fullDeck.add(card(values[j], suits[i]));
 		}
@@ -86,7 +86,7 @@ void takeTurn(player &currentPlayer, vector<player> &players, board &currentGame
 			cout << "Invalid input." << endl;
 		}
 	}
-	
+
 }
 
 cardSet combine(cardSet a, cardSet b) {
@@ -130,6 +130,11 @@ int main(void) {
 			bool repeat = false;
 			cout << "Type the name of player " << i << ": ";
 			cin >> name;
+			if (name == "Dev"){
+				currentGame.setDevMode(true);
+				cout << "Type the name of player " << i << ": ";
+				cin >> name;
+			}
 			for (int i = 0; i < players.size(); i++) {
 				if (name == players[i].printName()) {
 					cout << "Name cannot be the same as another player." << endl;
@@ -139,7 +144,14 @@ int main(void) {
 			if (repeat == false)
 				break;
 		}
-		players.push_back(player(name, 20000));
+		if (currentGame.getDevMode() == false)
+			players.push_back(player(name, 20000));
+		else{
+			int playerMoney;
+			cout << "Type the amount of money for player " << name <<": ";
+			cin >> playerMoney;
+			players.push_back(player(name, playerMoney));
+		}
 	}
 	int smallBlind = 400;
 	int gameRound = 1;
@@ -150,17 +162,36 @@ int main(void) {
 		}
 		cout << endl << endl;
 		cout << "It is round " << gameRound << endl << endl;
-		cout << "Blinds - " << players[blind].printName() << "($" << smallBlind << ")   " << players[(blind + 1) % players.size()].printName() << "($" << smallBlind*2 << ")" << endl << endl;
+		cout << "Blinds - " << players[blind].printName() << "($" << smallBlind << ")   " << players[(blind + 1) % players.size()].printName() << "($" << smallBlind * 2 << ")" << endl << endl;
 		system("pause");
 
 		deck = populate(deck); //fill deck w/ all 52 cards
 		deck.shuffle(); //randomize deck
 		int round = 1; //round of betting
-		for (int i = 0; i < players.size(); i++) { //deal everyone two cards
-			players[i].deal(deck.getFirst());
-			deck.remove(deck.getFirst());
-			players[i].deal(deck.getFirst());
-			deck.remove(deck.getFirst());
+		if (currentGame.getDevMode() == false){
+			for (int i = 0; i < players.size(); i++) { //deal everyone two cards
+				players[i].deal(deck.getFirst());
+				deck.remove(deck.getFirst());
+				players[i].deal(deck.getFirst());
+				deck.remove(deck.getFirst());
+			}
+		}
+		else{
+			for (int i = 0; i < players.size(); i++) { //deal everyone two cards
+				string tempValue, tempSuit;
+				cout << "Value for " << players[i].printName() << ": ";
+				cin >> tempValue;
+				cout << "Suit for " << players[i].printName() << ": ";
+				cin >> tempSuit;
+				players[i].deal(card(tempValue, tempSuit));
+				deck.remove(card(tempValue, tempSuit));
+				cout << "Value for " << players[i].printName() << ": ";
+				cin >> tempValue;
+				cout << "Suit for " << players[i].printName() << ": ";
+				cin >> tempSuit;
+				players[i].deal(card(tempValue, tempSuit));
+				deck.remove(card(tempValue, tempSuit));
+			}
 		}
 		if (players[blind].printMoney() >= smallBlind) //if they have enough to pay small blind
 			currentGame.addToPot(players[blind].bet(smallBlind)); //pay small blind
@@ -170,7 +201,7 @@ int main(void) {
 			currentGame.addToPot(players[(blind + 1) % players.size()].bet(smallBlind * 2)); //pay big blind
 		else
 			currentGame.addToPot(players[(blind + 1) % players.size()].bet(players[(blind + 1) % players.size()].printMoney())); //pay as much as they can
-		currentGame.setMaxBet(smallBlind*2);
+		currentGame.setMaxBet(smallBlind * 2);
 		int loop = (blind + 2) % players.size(); //used to loop through players in each round
 		int currentPlayers; //amount of players who are still in round (not folded)
 		bool roundOver = false; //keeps round looping until finished
@@ -199,8 +230,19 @@ int main(void) {
 			if (playersDoneBetting == currentPlayers) { //move to second round
 				if (round == 1) {
 					for (int i = 0; i < 3; i++) { //3 cards into the river on 1st round
-						currentGame.addToRiver(deck.getFirst());
-						deck.remove(deck.getFirst());
+						if (currentGame.getDevMode() == false){
+							currentGame.addToRiver(deck.getFirst());
+							deck.remove(deck.getFirst());
+						}
+						else{
+							string tempValue, tempSuit;
+							cout << "Value for card to add to river: ";
+							cin >> tempValue;
+							cout << "Suit for card to add to river: ";
+							cin >> tempSuit;
+							currentGame.addToRiver(card(tempValue, tempSuit));
+							deck.remove(card(tempValue, tempSuit));
+						}
 						for (int i = 0; i < players.size(); i++) { //reset players bet status for next round of betting
 							if (players[i].printState() != "folded")
 								players[i].setState("active|nb");
@@ -209,8 +251,19 @@ int main(void) {
 					round++;
 				}
 				else if (round == 2 || round == 3) { //1 card into the river on 2nd and 3rd rounds
-					currentGame.addToRiver(deck.getFirst());
-					deck.remove(deck.getFirst());
+					if (currentGame.getDevMode() == false){
+						currentGame.addToRiver(deck.getFirst());
+						deck.remove(deck.getFirst());
+					}
+					else{
+						string tempValue, tempSuit;
+						cout << "Value for card to add to river: ";
+						cin >> tempValue;
+						cout << "Suit for card to add to river: ";
+						cin >> tempSuit;
+						currentGame.addToRiver(card(tempValue, tempSuit));
+						deck.remove(card(tempValue, tempSuit));
+					}
 					for (int i = 0; i < players.size(); i++) { //reset players bet status for next round of betting
 						if (players[i].printState() != "folded")
 							players[i].setState("active|nb");
@@ -292,7 +345,7 @@ int main(void) {
 												}
 											}
 										}
-									}	
+									}
 								}
 							}
 							cout << " have split the pot for $" << potSplit << " each!" << endl;
@@ -336,7 +389,7 @@ int main(void) {
 					break;
 				}
 			}
-			if(players[loop].printState() != "folded")
+			if (players[loop].printState() != "folded")
 				takeTurn(players[loop], players, currentGame); //take turn betting if they have not folded
 			loop = (loop + 1) % players.size(); //move to next player
 		}

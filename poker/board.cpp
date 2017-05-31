@@ -5,6 +5,7 @@ using namespace std;
 board::board() {
 	pot = 0;
 	maxBet = 0;
+	devMode = false;
 }
 
 void board::addToPot(int x) {
@@ -21,6 +22,14 @@ void board::setMaxBet(int x) {
 
 void board::addToRiver(card x) {
 	river.add(x);
+}
+
+void board::setDevMode(bool x){
+	devMode = x;
+}
+
+bool board::getDevMode(){
+	return devMode;
 }
 
 int board::getPot() {
