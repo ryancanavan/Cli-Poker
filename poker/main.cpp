@@ -331,7 +331,7 @@ int main(void) {
 											sidePotAmount = potSplit;
 											players[j].editMoney(potSplit);
 											cout << players[j].printName() << " ";
-											currentGame.removeFromPot(potSplit);
+											currentGame.clearPot();
 										}
 										else {
 											string removeName = players[j].printName();
