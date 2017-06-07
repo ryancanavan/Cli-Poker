@@ -9,25 +9,29 @@ c:\users\ryan\documents\visual studio 2017\projects\poker\poker\compare.h(625): 
 c:\users\ryan\documents\visual studio 2017\projects\poker\poker\compare.h(641): warning C4018: '<': signed/unsigned mismatch
 c:\users\ryan\documents\visual studio 2017\projects\poker\poker\compare.h(646): warning C4018: '<': signed/unsigned mismatch
 c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(28): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(133): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(148): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(159): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(179): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(83): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(142): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(164): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(176): warning C4018: '<': signed/unsigned mismatch
 c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(184): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(194): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(204): warning C4018: '<': signed/unsigned mismatch
 c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(214): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(223): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(234): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(247): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(219): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(229): warning C4018: '<': signed/unsigned mismatch
 c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(250): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(265): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(277): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(285): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(288): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(271): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(280): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(291): warning C4018: '<': signed/unsigned mismatch
 c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(301): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(310): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(316): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(332): warning C4018: '<': signed/unsigned mismatch
 c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(343): warning C4018: '<': signed/unsigned mismatch
-c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(361): warning C4018: '<': signed/unsigned mismatch
-  poker.vcxproj -> C:\Users\Ryan\documents\visual studio 2017\Projects\poker\Debug\poker.exe
-  poker.vcxproj -> C:\Users\Ryan\documents\visual studio 2017\Projects\poker\Debug\poker.pdb (Partial PDB)
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(355): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(362): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(377): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(386): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(419): warning C4018: '<': signed/unsigned mismatch
+c:\users\ryan\documents\visual studio 2017\projects\poker\poker\main.cpp(437): warning C4018: '<': signed/unsigned mismatch
+  LINK : C:\Users\Ryan\Documents\Visual Studio 2017\Projects\poker\Debug\poker.exe not found or not built by the last incremental link; performing full link
+main.obj : error LNK2019: unresolved external symbol "public: void __thiscall board::setDevMode(bool)" (?setDevMode@board@@QAEX_N@Z) referenced in function _main
+main.obj : error LNK2019: unresolved external symbol "public: bool __thiscall board::getDevMode(void)" (?getDevMode@board@@QAE_NXZ) referenced in function _main
+C:\Users\Ryan\Documents\Visual Studio 2017\Projects\poker\Debug\poker.exe : fatal error LNK1120: 2 unresolved externals

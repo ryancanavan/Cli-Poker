@@ -80,6 +80,10 @@ void takeTurn(player &currentPlayer, vector<player> &players, board &currentGame
 			currentGame.addToPot(currentPlayer.bet(betAmount));
 			currentGame.setMaxBet(currentPlayer.getAmountBet());
 			currentPlayer.setState("active|b");
+			for (int i = 0; i < players.size(); i++) {
+				if (currentPlayer.printName() != players[i].printName() && players[i].printState() != "folded")
+					players[i].setState("active|nb");
+			}
 			break;
 		}
 		else {
